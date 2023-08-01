@@ -1,0 +1,18 @@
+{
+  "domain": "wappsto",
+  "name": "Wappsto",
+  "config_flow": false,
+  "documentation": "https://www.home-assistant.io/integrations/wappsto",
+  "requirements": [
+    "wappstoiot==0.6.2",
+    "rich==12.0.0"
+  ],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@wappsto"
+  ],
+  "iot_class": "cloud_push"
+}
