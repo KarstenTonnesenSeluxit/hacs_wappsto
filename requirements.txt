@@ -1,0 +1,2 @@
+async-retrying==0.2.2
+wappsto==1.2.12
