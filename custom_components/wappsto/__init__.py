@@ -46,7 +46,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     # logging.getLogger("wappstoiot").setLevel(logging.DEBUG)
 
     wappstoiot.config(
-        config_folder="/home/bach/Documents/Seluxit/repositories/home-assistant/homeassistant/components/wappsto/certificates",
+        config_folder="/workspaces/core/config/custom_components/wappsto",
         fast_send=False,
     )
     network = wappstoiot.createNetwork(name="HomeAssistant")
