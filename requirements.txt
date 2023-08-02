@@ -1,3 +1,2 @@
 async-retrying==0.2.2
-wappstoiot==0.6.7
 
