@@ -37,7 +37,7 @@ async def async_setup_entry(
 class __OnlineOfflineEntity(BinarySensorEntity):
     _attr_has_entity_name = True
     _attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
-    device_class = BinarySensorDeviceClass.CONNECTIVITY
+    # device_class = BinarySensorDeviceClass.CONNECTIVITY
 
     _LOGGER.error("OnlineOfflineEntity")
 

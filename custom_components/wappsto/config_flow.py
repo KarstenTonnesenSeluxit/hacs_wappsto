@@ -26,8 +26,7 @@ from homeassistant.const import (
     ATTR_FRIENDLY_NAME,
     ATTR_DEVICE_CLASS,
 )
-from .const import DOMAIN, ENTITY_LIST
-from .const import WAPPSTO_HAS_BEEN_SETUP
+from .const import DOMAIN, ENTITY_LIST, SUPPORTED_DOMAINS, WAPPSTO_HAS_BEEN_SETUP
 
 
 from config.custom_components.wappsto.setup_network import (
@@ -126,33 +125,6 @@ class InvalidLogin(exceptions.HomeAssistantError):
 
 class CouldNotCreate(exceptions.HomeAssistantError):
     """Error to indicate culd not create network."""
-
-
-SUPPORTED_DOMAINS = [
-    "alarm_control_panel",
-    "automation",
-    "binary_sensor",
-    "button",
-    "climate",
-    "cover",
-    "demo",
-    "device_tracker",
-    "fan",
-    "humidifier",
-    "input_boolean",
-    "input_button",
-    "input_select",
-    "light",
-    "lock",
-    "person",
-    "scene",
-    "script",
-    "select",
-    "sensor",
-    "switch",
-    "vacuum",
-    "water_heater",
-]
 
 
 class OptionsFlowHandler(config_entries.OptionsFlow):
