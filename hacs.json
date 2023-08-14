@@ -1,7 +1,7 @@
 {
     "name": "Wappsto",
     "render_readme": true,
-    "iot_class": "Cloud Push",
+    "iot_class": "cloud_push",
     "homeassistant": "2023.4.0",
     "zip_release": false
 }

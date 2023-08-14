@@ -17,5 +17,22 @@
     "abort": {
       "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
     }
+  },
+  "options": {
+    "error": {
+      "unknown": "Something went wrong"
+    },
+    "step": {
+      "init": {
+        "title": "Test init title",
+        "description": "user description"
+      },
+      "user": {
+        "title": "Test user title",
+        "data": {
+        },
+        "description": "user description"
+      }
+    }
   }
 }
