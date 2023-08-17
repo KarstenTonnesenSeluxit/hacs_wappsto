@@ -31,7 +31,7 @@ from .const import (
     ENTITY_LIST,
 )
 
-from .binary_sensor import test_sensor
+from .binary_sensor import wappsto_connected_sensor
 
 
 from homeassistant.const import CONF_API_KEY, CONF_NAME, Platform

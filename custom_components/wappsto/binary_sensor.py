@@ -30,7 +30,7 @@ async def async_setup_entry(
     _LOGGER.info("Asyc setup_entry")
 
     new_devices = []
-    new_devices.append(test_sensor)
+    new_devices.append(wappsto_connected_sensor)
     async_add_entities(new_devices, True)
 
 
@@ -83,4 +83,4 @@ class __OnlineOfflineEntity(BinarySensorEntity):
         self._is_on = "off"
 
 
-test_sensor = __OnlineOfflineEntity()
+wappsto_connected_sensor = __OnlineOfflineEntity()

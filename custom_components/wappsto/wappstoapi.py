@@ -32,7 +32,7 @@ from .const import (
     SENSOR,
 )
 
-from .binary_sensor import connected_sensor
+from .binary_sensor import wappsto_connected_sensor
 from homeassistant.const import CONF_API_KEY, CONF_NAME, Platform
 
 _LOGGER = logging.getLogger(__name__)
@@ -92,7 +92,7 @@ class WappstoApi:
             event_type=EVENT_HOMEASSISTANT_STOP,
             listener=lambda *args, **kwargs: wappstoiot.close(),
         )
-        connected_sensor.turn_on()
+        wappsto_connected_sensor.turn_on()
 
     def updateEntityList(self, entity_list: list):
         self.entity_list = entity_list
