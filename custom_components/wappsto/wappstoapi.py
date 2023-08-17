@@ -19,14 +19,32 @@ from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers import (
     device_registry as dr,
     entity_registry as er,
+    entity_values as ev,
+    entity as ent_help,
 )
 
-from .const import NETWORK_UUID, DOMAIN, STARTUP_MESSAGE, SUPPORTED_DOMAINS
+from .const import (
+    SUPPORTED_DOMAINS,
+    INPUT_BOOLEAN,
+    INPUT_BUTTON,
+    BINARY_SENSOR,
+    LIGHT,
+    SENSOR,
+)
 
-from .binary_sensor import test_sensor
+from .binary_sensor import connected_sensor
 from homeassistant.const import CONF_API_KEY, CONF_NAME, Platform
 
 _LOGGER = logging.getLogger(__name__)
+
+from .handle_input import HandleInput
+from .handle_binary_sensor import HandleBinarySensor
+from .handle_light import HandleLight
+from .handle_sensor import HandleSensor
+
+from homeassistant.helpers.entity import get_supported_features, get_capability
+
+import homeassistant.exceptions
 
 
 class WappstoApi:
@@ -36,6 +54,17 @@ class WappstoApi:
         self.entity_list = entity_list
         self.valueList = {}
         self.deviceList = {}
+        self.handle_input = HandleInput(self.hass)
+        self.handle_binary_sensor = HandleBinarySensor(self.hass)
+        self.handle_light = HandleLight(self.hass)
+        self.handle_sensor = HandleSensor(self.hass)
+
+        self.handlerDomain = {}
+        self.handlerDomain[INPUT_BUTTON] = self.handle_input
+        self.handlerDomain[INPUT_BOOLEAN] = self.handle_input
+        self.handlerDomain[BINARY_SENSOR] = self.handle_binary_sensor
+        self.handlerDomain[LIGHT] = self.handle_light
+        self.handlerDomain[SENSOR] = self.handle_sensor
 
         wappstoiot.config(
             config_folder="./config/custom_components/wappsto",
@@ -63,8 +92,7 @@ class WappstoApi:
             event_type=EVENT_HOMEASSISTANT_STOP,
             listener=lambda *args, **kwargs: wappstoiot.close(),
         )
-
-        test_sensor.turn_on()
+        connected_sensor.turn_on()
 
     def updateEntityList(self, entity_list: list):
         self.entity_list = entity_list
@@ -73,18 +101,25 @@ class WappstoApi:
     def handleEvent(self, event):
         entity_id = event.data.get("entity_id", "")
         _LOGGER.warning("Event id: %s [%s]", entity_id, event)
-        if entity_id in self.valueList:
+        (entity_type, entity_name) = entity_id.split(".")
+        if entity_type in SUPPORTED_DOMAINS:
             self.updateValueReport(entity_id, event)
 
     def createOrGetDevice(self, entity_id: str) -> Device | None:
         entity_list = er.async_get(self.hass)
         tmp_entity = entity_list.async_get(entity_id)
+
+        if not tmp_entity:
+            return None
         dev_id = tmp_entity.device_id
         if not dev_id or len(dev_id) == 0:
             return None
 
         dev_list = dr.async_get(self.hass)
         tmp_dev = dev_list.async_get(str(dev_id))
+
+        if not tmp_dev:
+            return None
         name = tmp_dev.name
         if not name or len(name) == 0:
             return None
@@ -95,22 +130,27 @@ class WappstoApi:
         return self.deviceList[dev_id]
 
     def createValue(self, entity_id: str):
-        # TODO missing initial value - report / control
         (entity_type, entity_name) = entity_id.split(".")
         if entity_type in SUPPORTED_DOMAINS:
             use_device = self.createOrGetDevice(entity_id)
             if not use_device:
                 use_device = self.temp_device
 
-            self.valueList[entity_id] = use_device.createValue(
-                name=entity_id,
-                permission=wappstoiot.PermissionType.READWRITE,
-                value_template=wappstoiot.ValueTemplate.BOOLEAN_TRUEFALSE,
+            current_entity = self.hass.states.get(entity_id)
+            # _LOGGER.error("TESTING !!!!!!!!!!!!!!!!! STATE: [%s]", current_entity)
+            initial_data = None
+            if current_entity:
+                _LOGGER.info(
+                    "Set initial report[%s]:[%s]", entity_id, current_entity.state
+                )
+                initial_data = current_entity.state
+
+            self.handlerDomain[entity_type].createValue(
+                use_device, entity_type, entity_id, initial_data
             )
 
     def updateValueReport(self, entity_id, event):
         testing = event.data["new_state"].state
-
-        _LOGGER.error("Report [%s]", testing)
-
-        self.valueList[entity_id].report(1 if testing == "on" else 0)
+        (entity_type, entity_name) = entity_id.split(".")
+        _LOGGER.info("Report [%s]", testing)
+        self.handlerDomain[entity_type].getReport(entity_type, entity_id, testing)

@@ -25,27 +25,33 @@ If you have any issues with this you need to do stufff
 -------------------------------------------------------------------
 """
 
+BINARY_SENSOR = "binary_sensor"
+INPUT_BOOLEAN = "input_boolean"
+INPUT_BUTTON = "input_button"
+LIGHT = "light"
+SENSOR = "sensor"
+
 SUPPORTED_DOMAINS = [
     # "alarm_control_panel",
     # "automation",
-    "binary_sensor",
-    "button",
-    "climate",
+    BINARY_SENSOR,
+    # "button",
+    # "climate",
     # "cover",
     # "device_tracker",
     # "fan",
     # "humidifier",
-    "input_boolean",
-    "input_button",
+    INPUT_BOOLEAN,
+    INPUT_BUTTON,
     # "input_select",
-    "light",
+    LIGHT,
     # "lock",
-    "person",
+    # "person",
     # "scene",
     # "script",
     # "select",
-    "sensor",
-    "switch",
+    SENSOR,
+    # "switch",
     # "vacuum",
     # "water_heater",
 ]

@@ -26,8 +26,8 @@ async def async_setup_entry(
     """Add sensors for passed config_entry in HA."""
     hub = hass.data[DOMAIN][config_entry.entry_id]
 
-    _LOGGER.warning("Testing hass.data[DOMAIN] [%s]", hass.data[DOMAIN])
-    _LOGGER.error("Asyc setup_entry")
+    _LOGGER.info("Testing hass.data[DOMAIN] [%s]", hass.data[DOMAIN])
+    _LOGGER.info("Asyc setup_entry")
 
     new_devices = []
     new_devices.append(test_sensor)
@@ -39,7 +39,7 @@ class __OnlineOfflineEntity(BinarySensorEntity):
     _attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
     # device_class = BinarySensorDeviceClass.CONNECTIVITY
 
-    _LOGGER.error("OnlineOfflineEntity")
+    _LOGGER.info("OnlineOfflineEntity")
 
     def __init__(self) -> None:
         self._is_on = "off"

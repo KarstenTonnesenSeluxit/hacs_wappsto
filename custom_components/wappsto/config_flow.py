@@ -158,7 +158,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 {
                     vol.Required(
                         ENTITY_LIST,
-                        default=list(self.options[ENTITY_LIST]),
+                        default=list(self.options[ENTITY_LIST]),  # type: ignore list is a valid type
                     ): cv.multi_select(entity_id_list),
                 }
             ),
