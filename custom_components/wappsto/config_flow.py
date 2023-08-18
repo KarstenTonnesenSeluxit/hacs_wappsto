@@ -29,7 +29,7 @@ from homeassistant.const import (
 from .const import DOMAIN, ENTITY_LIST, SUPPORTED_DOMAINS, WAPPSTO_HAS_BEEN_SETUP
 
 
-from config.custom_components.wappsto.setup_network import (
+from .setup_network import (
     get_session,
     create_network,
     claim_network,
