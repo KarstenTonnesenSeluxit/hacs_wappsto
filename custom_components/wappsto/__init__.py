@@ -48,6 +48,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 async def update_listener(hass, entry):
     """Handle options update."""
     _LOGGER.error("UPDATE CONFIG NOT HANDLED: [%s]", entry.options)
+    hass.data[DOMAIN][entry.entry_id].updateEntityList(entry.options[ENTITY_LIST])
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):

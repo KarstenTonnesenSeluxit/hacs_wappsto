@@ -96,7 +96,8 @@ class WappstoApi:
 
     def updateEntityList(self, entity_list: list):
         self.entity_list = entity_list
-        # TODO check for create or disable values/devices
+        for values in entity_list:
+            self.createValue(values)
 
     def handleEvent(self, event):
         entity_id = event.data.get("entity_id", "")
