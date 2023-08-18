@@ -100,7 +100,11 @@ class WappstoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 # _LOGGER.warning(user_input)
                 info = await validate_input(self.hass, user_input)
-                return self.async_create_entry(title=info[CONF_UUID], data=user_input)
+                return self.async_create_entry(
+                    title=info[CONF_UUID],
+                    data=user_input,
+                    options={ENTITY_LIST: list()},
+                )
             except InvalidLogin:
                 errors[CONF_EMAIL] = "cannot_connect"
             except CouldNotCreate:
