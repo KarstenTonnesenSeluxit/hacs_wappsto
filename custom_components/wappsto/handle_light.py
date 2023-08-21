@@ -48,14 +48,13 @@ class HandleLight(Handler):
             "max_color_temp_kelvin"
         ):
             minKelvin = state.attributes.get("min_color_temp_kelvin")
-
             maxKelvin = state.attributes.get("max_color_temp_kelvin")
             self.valueList[entity_id][COLOR_TEMP_VALUE] = device.createNumberValue(
                 name="temp Kelvin " + entity_id,
                 permission=wappstoiot.PermissionType.READWRITE,
                 type="color_temperature",
-                min=int(minKelvin),
-                max=int(maxKelvin),
+                min=int(minKelvin) if minKelvin else 0,
+                max=int(maxKelvin) if maxKelvin else 0,
                 step=1,
                 unit="kelvin",
             )
@@ -66,8 +65,8 @@ class HandleLight(Handler):
                 name="temp mireds " + entity_id,
                 permission=wappstoiot.PermissionType.READWRITE,
                 type="color_temperature",
-                min=int(minReds),
-                max=int(maxReds),
+                min=int(minReds) if minReds else 0,
+                max=int(maxReds) if maxReds else 0,
                 step=1,
                 unit="mireds",
             )
@@ -161,4 +160,3 @@ class HandleLight(Handler):
             return
         _LOGGER.warning("Testing light report: [%s]", data)
         self.valueList[entity_id][ONOFF_VALUE].report("1" if data == "on" else "0")
-        self.valueList[entity_id][ONOFF_VALUE].control("1" if data == "on" else "0")

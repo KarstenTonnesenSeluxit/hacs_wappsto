@@ -68,5 +68,3 @@ class HandleInput(Handler):
         if not entity_id in self.valueList:
             return
         self.valueList[entity_id].report("1" if data == "on" else "0")
-        if domain == "input_boolean":
-            self.valueList[entity_id].control("1" if data == "on" else "0")

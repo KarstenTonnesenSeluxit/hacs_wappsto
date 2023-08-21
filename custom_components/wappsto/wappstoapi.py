@@ -24,6 +24,8 @@ from homeassistant.helpers import (
     entity as ent_help,
 )
 
+_LOGGER = logging.getLogger(__name__)
+
 from .const import (
     SUPPORTED_DOMAINS,
     INPUT_BOOLEAN,
@@ -34,22 +36,13 @@ from .const import (
     SWITCH,
     BUTTON,
 )
-
 from .binary_sensor import wappsto_connected_sensor
-from homeassistant.const import CONF_API_KEY, CONF_NAME, Platform
-
-_LOGGER = logging.getLogger(__name__)
-
 from .handle_input import HandleInput
 from .handle_binary_sensor import HandleBinarySensor
 from .handle_light import HandleLight
 from .handle_sensor import HandleSensor
 from .handle_switch import HandleSwitch
 from .handle_button import HandleButton
-
-from homeassistant.helpers.entity import get_supported_features, get_capability
-
-import homeassistant.exceptions
 
 
 class WappstoApi:
@@ -103,6 +96,9 @@ class WappstoApi:
         )
         wappsto_connected_sensor.turn_on()
 
+    def close(self):
+        wappstoiot.close()
+
     def updateEntityList(self, entity_list: list):
         self.entity_list = entity_list
         for values in entity_list:
@@ -110,7 +106,7 @@ class WappstoApi:
 
     def handleEvent(self, event):
         entity_id = event.data.get("entity_id", "")
-        _LOGGER.warning("Event id: %s [%s]", entity_id, event)
+        _LOGGER.info("Event id: %s [%s]", entity_id, event)
         (entity_type, entity_name) = entity_id.split(".")
         if entity_type in SUPPORTED_DOMAINS:
             self.updateValueReport(entity_id, event)
@@ -147,7 +143,6 @@ class WappstoApi:
                 use_device = self.temp_device
 
             current_entity = self.hass.states.get(entity_id)
-            # _LOGGER.error("TESTING !!!!!!!!!!!!!!!!! STATE: [%s]", current_entity)
             initial_data = None
             if current_entity:
                 _LOGGER.info(
@@ -164,5 +159,4 @@ class WappstoApi:
             return
         testing = event.data["new_state"].state
         (entity_type, entity_name) = entity_id.split(".")
-        _LOGGER.info("Report [%s]", testing)
         self.handlerDomain[entity_type].getReport(entity_type, entity_id, testing)

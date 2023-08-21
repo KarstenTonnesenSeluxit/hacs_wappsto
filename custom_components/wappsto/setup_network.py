@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-import uuid
 import logging
 import requests
 
@@ -59,6 +58,15 @@ def claim_network(session, network_uuid, dry_run=False):
     rjson = json.loads(rdata.text)
     _LOGGER.info("Network: %s have been claimed", network_uuid)
     return rjson
+
+
+def delete_certificate_files() -> None:
+    ca_file = Path(__file__).with_name("ca.crt")
+    client_crt_file = Path(__file__).with_name("client.crt")
+    client_key_file = Path(__file__).with_name("client.key")
+    ca_file.unlink()
+    client_crt_file.unlink()
+    client_key_file.unlink()
 
 
 def create_certificaties_files_if_not_exist(creator) -> bool:
