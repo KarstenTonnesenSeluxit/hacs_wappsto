@@ -45,20 +45,14 @@ class HandleSensor(Handler):
                 self.valueList[entity_id].report(initial_data)
             return
 
-        minimum = -60000
-        maximum = 60000
         measure = get_unit_of_measurement(self.hass, entity_id)
-
-        if measure == "%":
-            minimum = 0
-            maximum = 100
 
         self.valueList[entity_id] = device.createNumberValue(
             name=entity_id,
             permission=wappstoiot.PermissionType.READ,
             type=valType,
-            min=minimum,
-            max=maximum,
+            min=0 if measure == "%" else -60000,
+            max=100 if measure == "%" else 60000,
             step=0.001,
             unit=measure if isinstance(measure, str) else "",
         )
