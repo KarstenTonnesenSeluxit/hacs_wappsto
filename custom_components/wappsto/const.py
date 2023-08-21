@@ -34,12 +34,13 @@ INPUT_BUTTON = "input_button"
 LIGHT = "light"
 SENSOR = "sensor"
 SWITCH = "switch"
+BUTTON = "button"
 
 SUPPORTED_DOMAINS = [
     # "alarm_control_panel",
     # "automation",
     BINARY_SENSOR,
-    # "button",
+    BUTTON,
     # "climate",
     # "cover",
     # "device_tracker",

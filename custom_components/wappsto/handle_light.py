@@ -44,29 +44,32 @@ class HandleLight(Handler):
         # ATTR_COLOR_TEMP_KELVIN = "color_temp_kelvin"
         # ATTR_MIN_COLOR_TEMP_KELVIN = "min_color_temp_kelvin"
         # ATTR_MAX_COLOR_TEMP_KELVIN = "max_color_temp_kelvin"
-        if state.attributes.get("min_mireds") and state.attributes.get("max_mireds"):
+        if state.attributes.get("min_color_temp_kelvin") and state.attributes.get(
+            "max_color_temp_kelvin"
+        ):
+            minKelvin = state.attributes.get("min_color_temp_kelvin")
+
+            maxKelvin = state.attributes.get("max_color_temp_kelvin")
+            self.valueList[entity_id][COLOR_TEMP_VALUE] = device.createNumberValue(
+                name="temp Kelvin " + entity_id,
+                permission=wappstoiot.PermissionType.READWRITE,
+                type="color_temperature",
+                min=int(minKelvin),
+                max=int(maxKelvin),
+                step=1,
+                unit="kelvin",
+            )
+        elif state.attributes.get("min_mireds") and state.attributes.get("max_mireds"):
             minReds = state.attributes.get("min_mireds")
             maxReds = state.attributes.get("max_mireds")
             self.valueList[entity_id][COLOR_TEMP_VALUE] = device.createNumberValue(
                 name="temp mireds " + entity_id,
                 permission=wappstoiot.PermissionType.READWRITE,
                 type="color_temperature",
-                min=int(minReds) if isinstance(minReds, str) else 0,
-                max=int(maxReds) if isinstance(maxReds, str) else 0,
+                min=int(minReds),
+                max=int(maxReds),
                 step=1,
                 unit="mireds",
-            )
-        elif state.attributes.get("min_mireds") and state.attributes.get("max_mireds"):
-            minKelvin = state.attributes.get("min_color_temp_kelvin")
-            maxKelvin = state.attributes.get("max_color_temp_kelvin")
-            self.valueList[entity_id][COLOR_TEMP_VALUE] = device.createNumberValue(
-                name="temp Kelvin " + entity_id,
-                permission=wappstoiot.PermissionType.READWRITE,
-                type="color_temperature",
-                min=int(minKelvin) if isinstance(minKelvin, str) else 0,
-                max=int(maxKelvin) if isinstance(maxKelvin, str) else 0,
-                step=1,
-                unit="",
             )
 
     def createBrightnessValue(self, device: Device, entity_id: str, state: State):
@@ -156,4 +159,6 @@ class HandleLight(Handler):
     def getReport(self, domain: str, entity_id: str, data: str) -> None:
         if entity_id not in self.valueList:
             return
+        _LOGGER.warning("Testing light report: [%s]", data)
         self.valueList[entity_id][ONOFF_VALUE].report("1" if data == "on" else "0")
+        self.valueList[entity_id][ONOFF_VALUE].control("1" if data == "on" else "0")
