@@ -62,7 +62,7 @@ class HandleInput(Handler):
             else:
                 self.valueList[entity_id].report("1" if initial_data == "on" else "0")
                 self.valueList[entity_id].control("1" if initial_data == "on" else "0")
-            self.valueList[entity_id].onControl(callback=setControl)
+        self.valueList[entity_id].onControl(callback=setControl)
 
     def getReport(self, domain: str, entity_id: str, data: str) -> None:
         if not entity_id in self.valueList:

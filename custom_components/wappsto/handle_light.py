@@ -101,6 +101,7 @@ class HandleLight(Handler):
         # ATTR_COLOR_NAME = "color_name"
         # ATTR_WHITE = "white"
 
+        self.valueList[entity_id] = {}
         if state:
             ### FOR DEBUG START
             debug_name = entity_id + " debug"
@@ -150,7 +151,7 @@ class HandleLight(Handler):
             self.valueList[entity_id][ONOFF_VALUE].control(
                 "1" if initial_data == "on" else "0"
             )
-            self.valueList[entity_id][ONOFF_VALUE].onControl(callback=setControl)
+        self.valueList[entity_id][ONOFF_VALUE].onControl(callback=setControl)
 
     def getReport(self, domain: str, entity_id: str, data: str) -> None:
         if entity_id in self.valueList:

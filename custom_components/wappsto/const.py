@@ -33,6 +33,7 @@ INPUT_BOOLEAN = "input_boolean"
 INPUT_BUTTON = "input_button"
 LIGHT = "light"
 SENSOR = "sensor"
+SWITCH = "switch"
 
 SUPPORTED_DOMAINS = [
     # "alarm_control_panel",
@@ -54,7 +55,7 @@ SUPPORTED_DOMAINS = [
     # "script",
     # "select",
     SENSOR,
-    # "switch",
+    SWITCH,
     # "vacuum",
     # "water_heater",
 ]

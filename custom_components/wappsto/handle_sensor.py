@@ -1,5 +1,6 @@
 import logging
 
+from homeassistant import exceptions
 from homeassistant.core import Event, HomeAssistant
 from homeassistant.helpers.entity import get_device_class, get_unit_of_measurement
 from homeassistant.components.sensor import SensorDeviceClass
@@ -20,14 +21,18 @@ class HandleSensor(Handler):
     ) -> None:
         valType = "unknown"
         createString = False
-        device_class = get_device_class(self.hass, entity_id)
-        if device_class:
-            valType = device_class
-            if (
-                SensorDeviceClass(device_class) == SensorDeviceClass.TIMESTAMP
-                or SensorDeviceClass(device_class) == SensorDeviceClass.DATE
-            ):
-                createString = True
+        try:
+            device_class = get_device_class(self.hass, entity_id)
+            if device_class:
+                valType = device_class
+                if (
+                    SensorDeviceClass(device_class) == SensorDeviceClass.TIMESTAMP
+                    or SensorDeviceClass(device_class) == SensorDeviceClass.DATE
+                ):
+                    createString = True
+        except exceptions.HomeAssistantError as e:
+            _LOGGER.error("Could not get device for entity: %s", entity_id)
+            return None
 
         if createString:
             self.valueList[entity_id] = device.createStringValue(
