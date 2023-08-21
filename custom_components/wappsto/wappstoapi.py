@@ -31,6 +31,7 @@ from .const import (
     BINARY_SENSOR,
     LIGHT,
     SENSOR,
+    SWITCH,
 )
 
 from .binary_sensor import wappsto_connected_sensor
@@ -42,6 +43,7 @@ from .handle_input import HandleInput
 from .handle_binary_sensor import HandleBinarySensor
 from .handle_light import HandleLight
 from .handle_sensor import HandleSensor
+from .handle_switch import HandleSwitch
 
 from homeassistant.helpers.entity import get_supported_features, get_capability
 
@@ -59,6 +61,7 @@ class WappstoApi:
         self.handle_binary_sensor = HandleBinarySensor(self.hass)
         self.handle_light = HandleLight(self.hass)
         self.handle_sensor = HandleSensor(self.hass)
+        self.handle_switch = HandleSwitch(self.hass)
 
         self.handlerDomain = {}
         self.handlerDomain[INPUT_BUTTON] = self.handle_input
@@ -66,6 +69,7 @@ class WappstoApi:
         self.handlerDomain[BINARY_SENSOR] = self.handle_binary_sensor
         self.handlerDomain[LIGHT] = self.handle_light
         self.handlerDomain[SENSOR] = self.handle_sensor
+        self.handlerDomain[SWITCH] = self.handle_switch
 
         wappstoiot.config(
             config_folder=Path(__file__).parent,

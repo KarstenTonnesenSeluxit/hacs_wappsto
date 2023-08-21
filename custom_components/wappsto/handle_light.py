@@ -154,6 +154,6 @@ class HandleLight(Handler):
         self.valueList[entity_id][ONOFF_VALUE].onControl(callback=setControl)
 
     def getReport(self, domain: str, entity_id: str, data: str) -> None:
-        if entity_id in self.valueList:
+        if entity_id not in self.valueList:
             return
         self.valueList[entity_id][ONOFF_VALUE].report("1" if data == "on" else "0")

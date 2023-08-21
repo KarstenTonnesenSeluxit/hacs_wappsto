@@ -10,7 +10,7 @@ from .handler import Handler
 _LOGGER = logging.getLogger(__name__)
 
 
-class HandleSwtich(Handler):
+class HandleSwitch(Handler):
     def __init__(self, hass: HomeAssistant) -> None:
         self.hass = hass
         self.valueList: dict[str, Value] = {}
