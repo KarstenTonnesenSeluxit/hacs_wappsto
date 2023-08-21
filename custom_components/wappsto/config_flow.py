@@ -1,3 +1,4 @@
+from pathlib import Path
 import logging
 import voluptuous as vol
 from typing import Any, Dict, Optional
@@ -22,18 +23,20 @@ from homeassistant.helpers.entity_registry import (
     async_entries_for_config_entry,
     async_get,
 )
-from homeassistant.const import (
-    ATTR_FRIENDLY_NAME,
-    ATTR_DEVICE_CLASS,
+from .const import (
+    DOMAIN,
+    ENTITY_LIST,
+    SUPPORTED_DOMAINS,
+    WAPPSTO_HAS_BEEN_SETUP,
+    CA_CRT_KEY,
+    CLIENT_CRT_KEY,
+    CLIENT_KEY_KEY,
 )
-from .const import DOMAIN, ENTITY_LIST, SUPPORTED_DOMAINS, WAPPSTO_HAS_BEEN_SETUP
-
-
 from .setup_network import (
     get_session,
     create_network,
     claim_network,
-    create_certificaties_files,
+    create_certificaties_files_if_not_exist,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -64,6 +67,7 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, str]:
 
     network_uuid = creator.get("network", {}).get("id")
     data[CONF_UUID] = network_uuid
+    data[CONF_PASSWORD] = ""
 
     await hass.async_add_executor_job(
         claim_network,
@@ -72,19 +76,21 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, str]:
     )
     _LOGGER.warning("Created Network uuid: %s", network_uuid)
 
-    saved_files = await hass.async_add_executor_job(create_certificaties_files, creator)
+    saved_files = await hass.async_add_executor_job(
+        create_certificaties_files_if_not_exist, creator
+    )
     if not saved_files:
         raise CouldNotCreate
 
-    return {CONF_UUID: network_uuid}
+    return {
+        CONF_UUID: network_uuid,
+        CA_CRT_KEY: creator["ca"],
+        CLIENT_CRT_KEY: creator["certificate"],
+        CLIENT_KEY_KEY: creator["private_key"],
+    }
 
 
 class WappstoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Example config flow."""
-
-    # The schema version of the entries that it creates
-    # Home Assistant will call your migrate method if the version changes
-    _LOGGER.error("ConfigFlow TEST WappstoConfigFlow")
     VERSION = 1
 
     def __init__(self) -> None:
@@ -98,10 +104,13 @@ class WappstoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             try:
-                # _LOGGER.warning(user_input)
+                _LOGGER.warning("This is user_input: [%s]", user_input)
                 info = await validate_input(self.hass, user_input)
+                user_input[CA_CRT_KEY] = info[CA_CRT_KEY]
+                user_input[CLIENT_CRT_KEY] = info[CLIENT_CRT_KEY]
+                user_input[CLIENT_KEY_KEY] = info[CLIENT_KEY_KEY]
                 return self.async_create_entry(
-                    title=info[CONF_UUID],
+                    title="Network: " + info[CONF_UUID],
                     data=user_input,
                     options={ENTITY_LIST: list()},
                 )

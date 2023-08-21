@@ -1,5 +1,6 @@
 import logging
 import wappstoiot
+from pathlib import Path
 
 from wappstoiot import Device
 
@@ -67,7 +68,7 @@ class WappstoApi:
         self.handlerDomain[SENSOR] = self.handle_sensor
 
         wappstoiot.config(
-            config_folder="./config/custom_components/wappsto",
+            config_folder=Path(__file__).parent,
             fast_send=False,
         )
         self.network = wappstoiot.createNetwork(name="HomeAssistant")
@@ -151,6 +152,8 @@ class WappstoApi:
             )
 
     def updateValueReport(self, entity_id, event):
+        if not event.data["new_state"]:
+            return
         testing = event.data["new_state"].state
         (entity_type, entity_name) = entity_id.split(".")
         _LOGGER.info("Report [%s]", testing)

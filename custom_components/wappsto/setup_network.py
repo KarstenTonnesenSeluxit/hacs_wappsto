@@ -4,6 +4,12 @@ import uuid
 import logging
 import requests
 
+from .const import (
+    CA_CRT_KEY,
+    CLIENT_CRT_KEY,
+    CLIENT_KEY_KEY,
+)
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -55,17 +61,22 @@ def claim_network(session, network_uuid, dry_run=False):
     return rjson
 
 
-def create_certificaties_files(creator):
-    # creator["ca"], creator["certificate"], creator["private_key"]
-    location = Path("./config/custom_components/wappsto")
-    location.mkdir(exist_ok=True)
+def create_certificaties_files_if_not_exist(creator) -> bool:
+    ca_file = Path(__file__).with_name("ca.crt")
+    client_crt_file = Path(__file__).with_name("client.crt")
+    client_key_file = Path(__file__).with_name("client.key")
+
+    if ca_file.exists() and client_crt_file.exists() and client_key_file.exists():
+        _LOGGER.info("All certificates exists")
+        return True
+
     try:
-        with open(location / "ca.crt", "w") as file:
-            file.write(creator["ca"])
-        with open(location / "client.crt", "w") as file:
-            file.write(creator["certificate"])
-        with open(location / "client.key", "w") as file:
-            file.write(creator["private_key"])
+        with ca_file.open("w") as file:
+            file.write(creator[CA_CRT_KEY])
+        with client_crt_file.open("w") as file:
+            file.write(creator[CLIENT_CRT_KEY])
+        with client_key_file.open("w") as file:
+            file.write(creator[CLIENT_KEY_KEY])
         return True
     except Exception as err:
         _LOGGER.error("An error occurred while saving Certificates: %s", err)

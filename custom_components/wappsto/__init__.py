@@ -29,9 +29,13 @@ from .const import (
     DOMAIN,
     STARTUP_MESSAGE,
     ENTITY_LIST,
+    CA_CRT_KEY,
+    CLIENT_CRT_KEY,
+    CLIENT_KEY_KEY,
 )
 
 from .binary_sensor import wappsto_connected_sensor
+from .setup_network import create_certificaties_files_if_not_exist
 
 
 from homeassistant.const import CONF_API_KEY, CONF_NAME, Platform
@@ -42,6 +46,9 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     """Set up this integration using YAML is not supported."""
     _LOGGER.info("Configflow async_setup is this supported? no, but must return True")
+
+    _LOGGER.error("CONFIG STARTT [%s]", config)
+
     return True
 
 
@@ -58,6 +65,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     _LOGGER.info("Async_setup_entry")
     # _LOGGER.warning("Configuration received: %s", conf)
+
+    saved_files = await hass.async_add_executor_job(
+        create_certificaties_files_if_not_exist, conf
+    )
+    if not saved_files:
+        _LOGGER.error("Certificate files not found")
 
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
