@@ -123,7 +123,7 @@ class HandleLight(Handler):
                 )
 
             self.valueList[entity_id][BRIGHTNESS_VALUE] = device.createNumberValue(
-                name=entity_id,
+                name=entity_id + " brightness",
                 permission=wappstoiot.PermissionType.READWRITE,
                 type="brightness",
                 min=0,
