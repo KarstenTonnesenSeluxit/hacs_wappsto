@@ -159,4 +159,6 @@ class WappstoApi:
             return
         testing = event.data["new_state"].state
         (entity_type, entity_name) = entity_id.split(".")
-        self.handlerDomain[entity_type].getReport(entity_type, entity_id, testing)
+        self.handlerDomain[entity_type].getReport(
+            entity_type, entity_id, testing, str(event)
+        )

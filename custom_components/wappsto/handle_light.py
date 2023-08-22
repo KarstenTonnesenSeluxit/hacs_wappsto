@@ -106,7 +106,7 @@ class HandleLight(Handler):
         self.valueList[entity_id] = {}
         if state:
             ### FOR DEBUG START
-            debug_name = entity_id + " debug"
+            debug_name = entity_id + " config"
             tmpDebugValue = device.createStringValue(
                 name=debug_name,
                 type="debug",
@@ -119,6 +119,13 @@ class HandleLight(Handler):
             self.createRgbValue(device, entity_id, state)
             self.createColorTempValue(device, entity_id, state)
             self.createBrightnessValue(device, entity_id, state)
+
+        self.valueList[entity_id]["debug"] = device.createStringValue(
+            name=entity_id + " debug",
+            type="debug",
+            permission=wappstoiot.PermissionType.READ,
+            max=500,
+        )
 
         self.valueList[entity_id][ONOFF_VALUE] = device.createNumberValue(
             name=entity_id,
@@ -155,8 +162,9 @@ class HandleLight(Handler):
             )
         self.valueList[entity_id][ONOFF_VALUE].onControl(callback=setControl)
 
-    def getReport(self, domain: str, entity_id: str, data: str) -> None:
+    def getReport(self, domain: str, entity_id: str, data: str, event: str) -> None:
         if entity_id not in self.valueList:
             return
         _LOGGER.warning("Testing light report: [%s]", data)
         self.valueList[entity_id][ONOFF_VALUE].report("1" if data == "on" else "0")
+        self.valueList[entity_id]["debug"].report(event)

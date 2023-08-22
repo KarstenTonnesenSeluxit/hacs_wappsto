@@ -23,5 +23,5 @@ class Handler(ABC):
         pass
 
     @abstractmethod
-    def getReport(self, domain: str, entity_id: str, data: str) -> str:
+    def getReport(self, domain: str, entity_id: str, data: str, event: str) -> str:
         pass

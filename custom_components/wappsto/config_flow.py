@@ -41,10 +41,22 @@ from .setup_network import (
 
 _LOGGER = logging.getLogger(__name__)
 
+from homeassistant.helpers.selector import (
+    TextSelector,
+    TextSelectorConfig,
+    TextSelectorType,
+)
+
 NETWORK_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_EMAIL): cv.string,
-        vol.Required(CONF_PASSWORD): cv.string,
+        vol.Required(CONF_EMAIL): TextSelector(
+            TextSelectorConfig(type=TextSelectorType.EMAIL, autocomplete="email")
+        ),
+        vol.Required(CONF_PASSWORD): TextSelector(
+            TextSelectorConfig(
+                type=TextSelectorType.PASSWORD, autocomplete="current-password"
+            )
+        ),
     }
 )
 
@@ -172,7 +184,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     vol.Required(
                         ENTITY_LIST,
                         default=list(self.options[ENTITY_LIST]),  # type: ignore list is a valid type
-                    ): cv.multi_select(entity_id_list),
+                    ): cv.multi_select(sorted(entity_id_list)),
                 }
             ),
         )

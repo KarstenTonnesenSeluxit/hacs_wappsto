@@ -163,7 +163,7 @@ class HandleBinarySensor(Handler):
         if initial_data:
             self.valueList[entity_id].report("1" if initial_data == "on" else "0")
 
-    def getReport(self, domain: str, entity_id: str, data: str) -> None:
+    def getReport(self, domain: str, entity_id: str, data: str, event: str) -> None:
         if not entity_id in self.valueList:
             return
         self.valueList[entity_id].report("1" if data == "on" else "0")
