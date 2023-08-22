@@ -142,21 +142,25 @@ class HandleLight(Handler):
         # ATTR_WHITE = "white"
 
         self.valueList[entity_id] = {}
+
+        ### FOR DEBUG START
+        config_name = entity_id + " config"
+        tmpDebugValue = device.createStringValue(
+            name=config_name,
+            type="config",
+            permission=wappstoiot.PermissionType.READ,
+            max=500,
+        )
+        ### FOR DEBUG END
+
         if state:
-            ### FOR DEBUG START
-            debug_name = entity_id + " config"
-            tmpDebugValue = device.createStringValue(
-                name=debug_name,
-                type="debug",
-                permission=wappstoiot.PermissionType.READ,
-                max=500,
-            )
             tmpDebugValue.report(str(state))
-            ### FOR DEBUG END
 
             self.createRgbValue(device, entity_id, state)
             self.createColorTempValue(device, entity_id, state)
             self.createBrightnessValue(device, entity_id, state)
+        else:
+            tmpDebugValue.report("No state found")
 
         self.valueList[entity_id]["debug"] = device.createStringValue(
             name=entity_id + " debug",
