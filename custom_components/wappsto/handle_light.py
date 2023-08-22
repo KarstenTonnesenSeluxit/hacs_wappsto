@@ -95,11 +95,14 @@ class HandleLight(Handler):
         else:
             modes = state.attributes.get(ATTR_SUPPORTED_COLOR_MODES)
             if modes and (
-                modes
-                in (
-                    ColorMode.BRIGHTNESS.value,
-                    ColorMode.COLOR_TEMP.value,
-                    ColorMode.XY.value,
+                modes.intersects(
+                    set(
+                        [
+                            ColorMode.BRIGHTNESS,
+                            ColorMode.COLOR_TEMP,
+                            ColorMode.XY,
+                        ]
+                    )
                 )
             ):
                 max_length = 255
