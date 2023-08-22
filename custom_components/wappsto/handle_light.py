@@ -4,6 +4,13 @@ import logging
 from homeassistant.core import Event, State, HomeAssistant
 from homeassistant.const import SERVICE_TURN_ON, SERVICE_TURN_OFF
 
+from homeassistant.components.light import (
+    ColorMode,
+    ATTR_COLOR_MODE,
+    ATTR_SUPPORTED_COLOR_MODES,
+)
+
+
 import wappstoiot
 from wappstoiot import Device, Value
 from .handler import Handler
@@ -78,13 +85,37 @@ class HandleLight(Handler):
         # ATTR_BRIGHTNESS_STEP = "brightness_step"
         # ATTR_BRIGHTNESS_STEP_PCT = "brightness_step_pct"
         max_length = 0
+
         if state.attributes.get("brightness"):
             # Create 0-255 brightness
             max_length = 255
         elif state.attributes.get("brightness_pct"):
             # Create 0-100 brightness
             max_length = 100
+        else:
+            modes = state.attributes.get(ATTR_SUPPORTED_COLOR_MODES)
+            if modes and (
+                ColorMode(modes) == ColorMode.BRIGHTNESS
+                or ColorMode(modes) == ColorMode.COLOR_TEMP
+                or ColorMode(modes) == ColorMode.XY
+            ):
+                max_length = 255
+
         if max_length > 0:
+
+            def setControl(value, data):
+                service_data = {
+                    "entity_id": entity_id,
+                    # "rgb_color": event.data.get("rgb_color", [255, 255, 255]),
+                    "brightness": data,
+                }
+                self.hass.services.call(
+                    domain="light",
+                    service=SERVICE_TURN_OFF if data == 0 else SERVICE_TURN_ON,
+                    service_data=service_data,
+                    blocking=False,
+                )
+
             self.valueList[entity_id][BRIGHTNESS_VALUE] = device.createNumberValue(
                 name=entity_id,
                 permission=wappstoiot.PermissionType.READWRITE,
@@ -94,6 +125,7 @@ class HandleLight(Handler):
                 step=1,
                 unit="",
             )
+            self.valueList[entity_id][BRIGHTNESS_VALUE].onControl(callback=setControl)
 
     def createValue(
         self, device: Device, domain: str, entity_id: str, initial_data: str | None
