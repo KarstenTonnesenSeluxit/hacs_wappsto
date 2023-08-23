@@ -34,7 +34,7 @@ class HandleLight(Handler):
     def __init__(self, hass: HomeAssistant) -> None:
         self.hass = hass
         self.valueList: dict[str, dict[str, Value]] = {}
-        self.enableConfigDebug = False
+        self.enableConfigDebug = True
         self.enableEventDebug = False
 
     def convert_rgb_to_hex(self, rgb: tuple[int, int, int]) -> str:
