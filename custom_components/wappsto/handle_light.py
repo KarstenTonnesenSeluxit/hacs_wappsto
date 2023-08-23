@@ -59,6 +59,9 @@ class HandleLight(Handler):
                 max=10,
                 encoding="hex",
             )
+        else:
+            _LOGGER.warning("Entiry [%s] has no support for color")
+            return
 
         if rgb_color is None:
             rgb_color = (0, 0, 0)
