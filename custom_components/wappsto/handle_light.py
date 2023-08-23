@@ -34,7 +34,7 @@ class HandleLight(Handler):
     def __init__(self, hass: HomeAssistant) -> None:
         self.hass = hass
         self.valueList: dict[str, dict[str, Value]] = {}
-        self.enableConfigDebug = True
+        self.enableConfigDebug = False
         self.enableEventDebug = False
 
     def convert_rgb_to_hex(self, rgb: tuple[int, int, int]) -> str:
@@ -49,16 +49,19 @@ class HandleLight(Handler):
         # ATTR_HS_COLOR = "hs_color"
 
         rgb_color = state.attributes.get("rgb_color")
-        if rgb_color is None:
-            return
 
-        self.valueList[entity_id][COLOR_VALUE] = device.createBlobValue(
-            name=entity_id + " color",
-            type="color",
-            permission=wappstoiot.PermissionType.READWRITE,
-            max=10,
-            encoding="hex",
-        )
+        modes = state.attributes.get(ATTR_SUPPORTED_COLOR_MODES)
+        if modes and ColorMode.XY in modes:
+            self.valueList[entity_id][COLOR_VALUE] = device.createBlobValue(
+                name=entity_id + " color",
+                type="color",
+                permission=wappstoiot.PermissionType.READWRITE,
+                max=10,
+                encoding="hex",
+            )
+
+        if rgb_color is None:
+            rgb_color = (0, 0, 0)
 
         def setControl(value, data):
             rgb_tuple = struct.unpack("BBB", bytes.fromhex(data))
@@ -91,8 +94,13 @@ class HandleLight(Handler):
         # ATTR_MAX_COLOR_TEMP_KELVIN = "max_color_temp_kelvin"
 
         temp_start = 0
-        if state.attributes.get("color_temp_kelvin") is not None:
-            temp_start = state.attributes.get("color_temp_kelvin")
+
+        if (state.attributes.get("min_color_temp_kelvin") is not None) and (
+            state.attributes.get("max_color_temp_kelvin") is not None
+        ):
+            if state.attributes.get("color_temp_kelvin") is not None:
+                temp_start = state.attributes.get("color_temp_kelvin")
+
             minKelvin = state.attributes.get("min_color_temp_kelvin")
             maxKelvin = state.attributes.get("max_color_temp_kelvin")
             self.valueList[entity_id][COLOR_TEMP_VALUE] = device.createNumberValue(
@@ -154,20 +162,14 @@ class HandleLight(Handler):
             # Create 0-100 brightness
             max_length = 100
             start_brightness = state.attributes.get("brightness_pct")
-        # else:
-        #     modes = state.attributes.get(ATTR_SUPPORTED_COLOR_MODES)
-        #     if modes and (
-        #         modes.intersects(
-        #             set(
-        #                 [
-        #                     ColorMode.BRIGHTNESS,
-        #                     ColorMode.COLOR_TEMP,
-        #                     ColorMode.XY,
-        #                 ]
-        #             )
-        #         )
-        #     ):
-        #         max_length = 255
+        else:
+            modes = state.attributes.get(ATTR_SUPPORTED_COLOR_MODES)
+            if modes and (
+                ColorMode.BRIGHTNESS in modes
+                or ColorMode.COLOR_TEMP in modes
+                or ColorMode.XY in modes
+            ):
+                max_length = 255
 
         if max_length > 0:
 
@@ -288,9 +290,9 @@ class HandleLight(Handler):
             return
 
         ## Update brightness if exist
-        if self.valueList[entity_id][BRIGHTNESS_VALUE] and new_state.attributes.get(
-            "brightness"
-        ):
+        if self.valueList[entity_id].get(
+            BRIGHTNESS_VALUE
+        ) is not None and new_state.attributes.get("brightness"):
             _LOGGER.warning(
                 "Testing light brightness: [%s]",
                 new_state.attributes.get("brightness"),
@@ -302,12 +304,18 @@ class HandleLight(Handler):
 
         ## Update color temperature if exist
         temp_color = new_state.attributes.get("color_temp_kelvin")
-        if self.valueList[entity_id][COLOR_TEMP_VALUE] and temp_color is not None:
+        if (
+            self.valueList[entity_id].get(COLOR_TEMP_VALUE) is not None
+            and temp_color is not None
+        ):
             self.valueList[entity_id][COLOR_TEMP_VALUE].report(temp_color)
 
         ## Update color if exist
         rgb_color = new_state.attributes.get("rgb_color")
-        if self.valueList[entity_id][COLOR_VALUE] and rgb_color is not None:
+        if (
+            self.valueList[entity_id].get(COLOR_VALUE) is not None
+            and rgb_color is not None
+        ):
             self.valueList[entity_id][COLOR_VALUE].report(
                 self.convert_rgb_to_hex(rgb_color)
             )
