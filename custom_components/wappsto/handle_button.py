@@ -27,7 +27,7 @@ class HandleButton(Handler):
         if initial_data:
             self.valueList[entity_id].report(initial_data)
 
-    def getReport(self, domain: str, entity_id: str, data: str, event: str) -> None:
+    def getReport(self, domain: str, entity_id: str, data: str, event: Event) -> None:
         if not entity_id in self.valueList:
             return
         self.valueList[entity_id].report(data)

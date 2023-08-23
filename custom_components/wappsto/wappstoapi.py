@@ -8,6 +8,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.components import is_on
 from homeassistant.const import (
     EVENT_STATE_CHANGED,
+    EVENT_HOMEASSISTANT_STARTED,
     EVENT_HOMEASSISTANT_STOP,
     EVENT_SERVICE_REGISTERED,
 )
@@ -54,10 +55,10 @@ class WappstoApi:
         self.deviceList = {}
         self.handle_input = HandleInput(self.hass)
         self.handle_binary_sensor = HandleBinarySensor(self.hass)
-        self.handle_light = HandleLight(self.hass)
         self.handle_sensor = HandleSensor(self.hass)
         self.handle_switch = HandleSwitch(self.hass)
         self.handle_button = HandleButton(self.hass)
+        self.handle_light = HandleLight(self.hass)
 
         self.handlerDomain = {}
         self.handlerDomain[INPUT_BUTTON] = self.handle_input
@@ -75,9 +76,6 @@ class WappstoApi:
         self.network = wappstoiot.createNetwork(name="HomeAssistant")
         self.temp_device = self.network.createDevice("Default device")
 
-        for values in entity_list:
-            self.createValue(values)
-
         def event_handler(event):
             self.handleEvent(event)
 
@@ -85,9 +83,19 @@ class WappstoApi:
             domain = event.data["domain"]
             _LOGGER.warning("Event started, domain: %s [%s]", domain, event)
 
+        def event_ha_started(event):
+            _LOGGER.info("HA started event")
+            for values in entity_list:
+                self.createValue(values)
+
         hass.bus.async_listen(event_type=EVENT_STATE_CHANGED, listener=event_handler)
         hass.bus.async_listen(  # NOTE: et it to work to create the value!!
             event_type=EVENT_SERVICE_REGISTERED, listener=event_started
+        )
+
+        hass.bus.async_listen_once(
+            EVENT_HOMEASSISTANT_STARTED,
+            event_ha_started,
         )
 
         hass.bus.async_listen(
@@ -160,5 +168,5 @@ class WappstoApi:
         testing = event.data["new_state"].state
         (entity_type, entity_name) = entity_id.split(".")
         self.handlerDomain[entity_type].getReport(
-            entity_type, entity_id, testing, str(event)
+            entity_type, entity_id, testing, event
         )

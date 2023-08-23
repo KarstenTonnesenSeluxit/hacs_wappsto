@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, Event
 
 from wappstoiot import Device, Value
 
@@ -23,5 +23,5 @@ class Handler(ABC):
         pass
 
     @abstractmethod
-    def getReport(self, domain: str, entity_id: str, data: str, event: str) -> str:
+    def getReport(self, domain: str, entity_id: str, data: str, event: Event) -> str:
         pass

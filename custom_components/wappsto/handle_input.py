@@ -64,7 +64,7 @@ class HandleInput(Handler):
                 self.valueList[entity_id].control("1" if initial_data == "on" else "0")
         self.valueList[entity_id].onControl(callback=setControl)
 
-    def getReport(self, domain: str, entity_id: str, data: str, event: str) -> None:
+    def getReport(self, domain: str, entity_id: str, data: str, event: Event) -> None:
         if not entity_id in self.valueList:
             return
         self.valueList[entity_id].report("1" if data == "on" else "0")
