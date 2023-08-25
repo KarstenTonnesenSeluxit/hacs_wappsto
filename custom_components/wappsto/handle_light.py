@@ -34,7 +34,7 @@ class HandleLight(Handler):
     def __init__(self, hass: HomeAssistant) -> None:
         self.hass = hass
         self.valueList: dict[str, dict[str, Value]] = {}
-        self.enableConfigDebug = True
+        self.enableConfigDebug = False
         self.enableEventDebug = False
 
     def convert_rgb_to_hex(self, rgb: tuple[int, int, int]) -> str:
@@ -97,6 +97,10 @@ class HandleLight(Handler):
         # ATTR_MAX_COLOR_TEMP_KELVIN = "max_color_temp_kelvin"
 
         temp_start = 0
+
+        modes = state.attributes.get(ATTR_SUPPORTED_COLOR_MODES)
+        if modes is None or ColorMode.COLOR_TEMP not in modes:
+            return
 
         if (state.attributes.get("min_color_temp_kelvin") is not None) and (
             state.attributes.get("max_color_temp_kelvin") is not None

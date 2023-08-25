@@ -36,6 +36,7 @@ from .const import (
     SENSOR,
     SWITCH,
     BUTTON,
+    DEVICE_TRACKER,
 )
 from .binary_sensor import wappsto_connected_sensor
 from .handle_input import HandleInput
@@ -44,6 +45,7 @@ from .handle_light import HandleLight
 from .handle_sensor import HandleSensor
 from .handle_switch import HandleSwitch
 from .handle_button import HandleButton
+from .handle_device_tracker import HandleDeviceTracker
 
 
 class WappstoApi:
@@ -59,6 +61,7 @@ class WappstoApi:
         self.handle_switch = HandleSwitch(self.hass)
         self.handle_button = HandleButton(self.hass)
         self.handle_light = HandleLight(self.hass)
+        self.handle_device_tracker = HandleDeviceTracker(self.hass)
 
         self.handlerDomain = {}
         self.handlerDomain[INPUT_BUTTON] = self.handle_input
@@ -68,6 +71,7 @@ class WappstoApi:
         self.handlerDomain[SENSOR] = self.handle_sensor
         self.handlerDomain[SWITCH] = self.handle_switch
         self.handlerDomain[BUTTON] = self.handle_button
+        self.handlerDomain[DEVICE_TRACKER] = self.handle_device_tracker
 
         wappstoiot.config(
             config_folder=Path(__file__).parent,
@@ -132,10 +136,10 @@ class WappstoApi:
         dev_list = dr.async_get(self.hass)
         tmp_dev = dev_list.async_get(str(dev_id))
 
-        if not tmp_dev:
+        if tmp_dev is None:
             return None
         name = tmp_dev.name
-        if not name or len(name) == 0:
+        if name is None or len(name) == 0:
             return None
 
         if not dev_id in self.deviceList:

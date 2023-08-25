@@ -35,6 +35,7 @@ LIGHT = "light"
 SENSOR = "sensor"
 SWITCH = "switch"
 BUTTON = "button"
+DEVICE_TRACKER = "device_tracker"
 
 SUPPORTED_DOMAINS = [
     # "alarm_control_panel",
@@ -43,7 +44,7 @@ SUPPORTED_DOMAINS = [
     BUTTON,
     # "climate",
     # "cover",
-    # "device_tracker",
+    DEVICE_TRACKER,
     # "fan",
     # "humidifier",
     INPUT_BOOLEAN,
