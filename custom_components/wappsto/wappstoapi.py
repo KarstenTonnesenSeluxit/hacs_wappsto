@@ -143,7 +143,9 @@ class WappstoApi:
             return None
 
         if not dev_id in self.deviceList:
-            self.deviceList[dev_id] = self.network.createDevice(name)
+            illegal = wappstoiot.utils.name_check.illegal_characters(name)
+            mapping_illegal = str.maketrans('', '', illegal)
+            self.deviceList[dev_id] = self.network.createDevice(name.translate(mapping_illegal))
 
         return self.deviceList[dev_id]
 
