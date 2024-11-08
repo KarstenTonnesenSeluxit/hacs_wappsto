@@ -5,7 +5,6 @@ from pathlib import Path
 from wappstoiot import Device
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.components import is_on
 from homeassistant.const import (
     EVENT_STATE_CHANGED,
     EVENT_HOMEASSISTANT_STARTED,
