@@ -1,3 +1,5 @@
+# Deprecated!  No longer maintained.
+
 # Wappsto value forwarder - integrated via HACS
 
 It is required that you have HACS installed in Home Assistant for you to use this integration.
